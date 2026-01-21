@@ -1,69 +1,73 @@
-import { Sparkles } from "lucide-react";
+import React from "react";
+import { ChevronRight } from "lucide-react";
+import happy from "../assets/happy-valentines.gif";
+import pooh from "../assets/winnie-the-pooh-pooh-bear.gif";
 
-export default function ProposalScreen({
-  onYes,
-  onNo,
-  showNoWarning,
-  setShowNoWarning,
-}) {
+export default function ProposalScreen({ onYes }) {
   return (
-    <div className="text-center animate-fade-in relative px-2">
-      <div className="text-6xl sm:text-8xl mb-4 animate-pulse">💌</div>
-
-      <h1
-        className="text-3xl sm:text-6xl font-light text-rose-700 mb-4"
-        style={{ fontFamily: "Georgia, serif" }}
-      >
-        Will You Be My Valentine?
-      </h1>
-
-      <p className="text-base sm:text-xl text-rose-500 mb-10 max-w-xs mx-auto">
-        A little digital bouquet of reasons why you're amazing.
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center px-6 bg-gradient-to-br from-pink-100 via-pink-50 to-rose-100 animate-fade-in">
+      {/* Top soft text */}
+      <p className="text-rose-300 text-sm italic mb-2 text-center">
+        Hey i have made something special for you…
       </p>
 
-      <div className="flex flex-col gap-4 max-w-[280px] mx-auto">
+      {/* Main Heading */}
+      <h1
+        className="text-center text-4xl sm:text-5xl font-extrabold text-rose-500 leading-tight mb-6"
+        style={{ fontFamily: "Georgia, serif" }}
+      >
+        Will You Be My <br /> Valentine ?
+      </h1>
+
+      {/* ================= CARD ================= */}
+      <div className="relative w-full max-w-sm bg-pink-200/60 backdrop-blur-md rounded-3xl p-6 shadow-xl border border-pink-100 text-center">
+        {/* ===== TOP RIGHT GIF ===== */}
+        <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/80 backdrop-blur-md border border-pink-200 shadow-lg flex items-center justify-center overflow-hidden">
+          <img
+            src={happy}
+            alt="Happy Valentines"
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+        </div>
+
+        {/* ===== BOTTOM LEFT GIF ===== */}
+        <div className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-white/80 backdrop-blur-md border border-pink-200 shadow-lg flex items-center justify-center overflow-hidden">
+          <img
+            src={pooh}
+            alt="Cute Pooh"
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+        </div>
+
+        {/* Window dots */}
+        <div className="flex gap-2 mb-4 justify-start">
+          <span className="w-3 h-3 bg-red-300 rounded-full" />
+          <span className="w-3 h-3 bg-yellow-300 rounded-full" />
+          <span className="w-3 h-3 bg-green-300 rounded-full" />
+        </div>
+
+        <p className="text-rose-600 text-sm mb-3 leading-relaxed">
+          A little reminder of what this day feels like with you.
+        </p>
+
+        <p className="text-rose-400 text-xs italic mb-6">
+          Tap below when you're ready
+        </p>
+
+        {/* CTA */}
         <button
           onClick={onYes}
-          className="w-full py-4 bg-gradient-to-r from-pink-400 to-rose-500 text-white rounded-2xl shadow-lg flex justify-center items-center gap-2"
+          className="w-full py-4 bg-gradient-to-r from-pink-400 to-rose-500 text-white rounded-full shadow-lg flex items-center justify-center gap-2 text-sm font-semibold active:scale-95 transition-all"
         >
-          Yes! <Sparkles className="w-5 h-5" />
-        </button>
-
-        <button
-          onClick={() => setShowNoWarning(true)}
-          className="w-full py-4 bg-white/80 text-rose-400 rounded-2xl border"
-        >
-          No
+          Open This ✨
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
-      {showNoWarning && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-rose-900/30 backdrop-blur-md">
-          <div className="bg-white rounded-3xl p-6 text-center max-w-xs">
-            <div className="text-5xl mb-4">🥺</div>
-            <h3 className="text-xl font-bold text-rose-700 mb-2">
-              Are you really sure?
-            </h3>
-            <p className="text-rose-500 mb-6 text-sm">
-              My digital heart might break just a little...
-            </p>
-
-            <button
-              onClick={onYes}
-              className="w-full py-3 bg-rose-500 text-white rounded-xl mb-2"
-            >
-              Okay, I'll be your Valentine!
-            </button>
-
-            <button
-              onClick={() => setShowNoWarning(false)}
-              className="text-rose-400 text-xs"
-            >
-              Let me think again
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Bottom spacing */}
+      <div className="h-10" />
     </div>
   );
 }

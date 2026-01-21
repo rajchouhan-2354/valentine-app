@@ -1,121 +1,180 @@
-import { useEffect } from "react";
-import { Heart, RotateCcw } from "lucide-react";
-import { gameSymbols } from "../data/gameSymbols";
+import React, { useState } from "react";
 
-export default function MemoryGame({
-  gameCards,
-  setGameCards,
-  flippedCards,
-  setFlippedCards,
-  matchedPairs,
-  setMatchedPairs,
-  moves,
-  setMoves,
-  onWin,
-}) {
-  useEffect(() => {
-    initGame();
-  }, []);
+const SYMBOLS = ["🌙", "💝", "🌸", "✨", "🦋", "🍓"];
 
-  const initGame = () => {
-    const cards = [...gameSymbols, ...gameSymbols]
+/* 🌸 Fixed leaves (do not regenerate) */
+const LEAVES = Array.from({ length: 14 }).map((_, i) => ({
+  id: i,
+  left: `${(i * 7) % 100}%`,
+  delay: `${i * 1.3}s`,
+  size: `${12 + (i % 5) * 4}px`,
+  duration: `${14 + (i % 6) * 2}s`,
+}));
+
+export default function MemoryGame({ onWin }) {
+  const [cards, setCards] = useState(() =>
+    [...SYMBOLS, ...SYMBOLS]
       .sort(() => Math.random() - 0.5)
-      .map((symbol, idx) => ({ id: idx, symbol }));
+      .map((symbol, i) => ({ id: i, symbol })),
+  );
+  const [flipped, setFlipped] = useState([]);
+  const [matched, setMatched] = useState([]);
+  const [moves, setMoves] = useState(0);
 
-    setGameCards(cards);
-    setFlippedCards([]);
-    setMatchedPairs([]);
-    setMoves(0);
-  };
+  /* ---------- CARD FLIP ---------- */
+  const flipCard = (index) => {
+    if (flipped.length === 2) return;
+    if (flipped.includes(index)) return;
+    if (matched.includes(cards[index].symbol)) return;
 
-  const handleFlip = (id) => {
-    if (
-      flippedCards.length === 2 ||
-      flippedCards.includes(id) ||
-      matchedPairs.includes(gameCards.find((c) => c.id === id)?.symbol)
-    )
-      return;
+    const next = [...flipped, index];
+    setFlipped(next);
 
-    const newFlipped = [...flippedCards, id];
-    setFlippedCards(newFlipped);
+    if (next.length === 2) {
+      setMoves((m) => m + 1);
+      const [a, b] = next;
 
-    if (newFlipped.length === 2) {
-      setMoves(moves + 1);
-      const [first, second] = newFlipped;
-
-      const firstCard = gameCards.find((c) => c.id === first);
-      const secondCard = gameCards.find((c) => c.id === second);
-
-      if (firstCard.symbol === secondCard.symbol) {
-        setMatchedPairs([...matchedPairs, firstCard.symbol]);
-        setFlippedCards([]);
+      if (cards[a].symbol === cards[b].symbol) {
+        setMatched((prev) => [...prev, cards[a].symbol]);
+        setTimeout(() => setFlipped([]), 250);
       } else {
-        setTimeout(() => setFlippedCards([]), 800);
+        setTimeout(() => setFlipped([]), 650);
       }
     }
   };
 
+  const resetGame = () => {
+    setCards(
+      [...SYMBOLS, ...SYMBOLS]
+        .sort(() => Math.random() - 0.5)
+        .map((symbol, i) => ({ id: i, symbol })),
+    );
+    setFlipped([]);
+    setMatched([]);
+    setMoves(0);
+  };
+
   return (
-    <div className="w-full animate-fade-in flex flex-col items-center px-1">
-      <h2
-        className="text-2xl sm:text-3xl font-light text-rose-700 mb-4 text-center"
-        style={{ fontFamily: "Georgia, serif" }}
-      >
-        Memory Match
-      </h2>
-
-      <div className="mb-6 flex gap-6 text-xs text-rose-600 font-semibold bg-white/60 px-5 py-2 rounded-full shadow-sm">
-        <span>Moves: {moves}</span>
-        <span>
-          Matched: {matchedPairs.length}/{gameSymbols.length}
-        </span>
+    <div className="relative min-h-[100dvh] overflow-hidden bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100 flex flex-col items-center px-4">
+      {/* 🌸 FLOATING LEAVES (STABLE) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {LEAVES.map((leaf) => (
+          <span
+            key={leaf.id}
+            className="absolute text-pink-300/40 animate-float-down"
+            style={{
+              left: leaf.left,
+              top: "-10%",
+              fontSize: leaf.size,
+              animationDelay: leaf.delay,
+              animationDuration: leaf.duration,
+            }}
+          >
+            🌸
+          </span>
+        ))}
       </div>
 
-      <div className="grid grid-cols-4 gap-2 w-full max-w-[320px] mb-8 perspective-1000">
-        {gameCards.map((card) => {
-          const isFlipped =
-            flippedCards.includes(card.id) ||
-            matchedPairs.includes(card.symbol);
+      {/* ---------- HEADER ---------- */}
+      <div className="relative z-10 pt-8 text-center">
+        <p className="text-rose-300 text-sm italic">A little fun for today</p>
 
-          return (
-            <div
-              key={card.id}
-              onClick={() => handleFlip(card.id)}
-              className="aspect-square cursor-pointer relative transition-all duration-500"
-              style={{
-                transformStyle: "preserve-3d",
-                transform: isFlipped ? "rotateY(180deg)" : "rotateY(0)",
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-300 to-rose-400 rounded-lg shadow border border-white flex items-center justify-center backface-hidden">
-                <Heart className="w-5 h-5 text-white/70" />
-              </div>
-
-              <div className="absolute inset-0 bg-white rounded-lg shadow border border-pink-50 flex items-center justify-center text-2xl rotate-y-180 backface-hidden">
-                {card.symbol}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex gap-3">
-        <button
-          onClick={initGame}
-          className="p-3 bg-white text-rose-600 rounded-full shadow"
+        <h2
+          className="text-2xl sm:text-3xl font-extrabold text-rose-500 mt-1"
+          style={{ fontFamily: "Georgia, serif" }}
         >
-          <RotateCcw className="w-5 h-5" />
+          Valentine Memory Match 💗
+        </h2>
+      </div>
+
+      {/* ---------- STATS ---------- */}
+      <div className="relative z-10 flex gap-4 mt-6">
+        <div className="bg-white/80 backdrop-blur-md px-6 py-3 rounded-2xl shadow border border-pink-100 text-center">
+          <p className="text-xs text-rose-400">Moves</p>
+          <p className="text-xl font-bold text-rose-500">{moves}</p>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md px-6 py-3 rounded-2xl shadow border border-pink-100 text-center">
+          <p className="text-xs text-rose-400">Matched</p>
+          <p className="text-xl font-bold text-rose-500">
+            {matched.length}/{SYMBOLS.length}
+          </p>
+        </div>
+      </div>
+
+      {/* ---------- GAME GRID ---------- */}
+      <div className="relative z-10 flex-grow flex items-center justify-center w-full">
+        <div className="grid grid-cols-4 gap-4">
+          {cards.map((card, index) => {
+            const isOpen =
+              flipped.includes(index) || matched.includes(card.symbol);
+
+            return (
+              <button
+                key={card.id}
+                onClick={() => flipCard(index)}
+                className="w-[70px] h-[70px] active:scale-95 transition-all"
+              >
+                {/* CARD SHELL */}
+                <div
+                  className={`w-full h-full rounded-[22px] flex items-center justify-center 
+                    transition-all duration-500 shadow-lg
+                    ${
+                      isOpen
+                        ? "bg-white/90 border border-pink-200"
+                        : "bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500"
+                    }`}
+                >
+                  {/* INNER CONTENT */}
+                  {isOpen ? (
+                    <span className="text-2xl">{card.symbol}</span>
+                  ) : (
+                    <div
+                      className="w-9 h-9 rounded-full bg-white/30 backdrop-blur-md 
+                                    flex items-center justify-center text-white font-bold text-lg"
+                    >
+                      ?
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ---------- CONTROLS ---------- */}
+      <div className="relative z-10 w-full max-w-xs pb-8">
+        <button
+          onClick={resetGame}
+          className="w-full py-3 bg-white/80 backdrop-blur-md rounded-full shadow border border-pink-100
+                     text-rose-500 font-semibold"
+        >
+          Reset Game
         </button>
 
-        {matchedPairs.length === gameSymbols.length && (
+        {matched.length === SYMBOLS.length && (
           <button
             onClick={onWin}
-            className="px-8 py-3 bg-rose-500 text-white rounded-full shadow-lg text-sm font-semibold animate-bounce"
+            className="w-full mt-3 py-3 bg-gradient-to-r from-pink-400 to-rose-500
+                       text-white rounded-full shadow-lg font-semibold animate-bounce"
           >
-            Claim Prize!
+            Next ✨
           </button>
         )}
       </div>
+
+      {/* 🌸 FIXED FLOAT ANIMATION */}
+      <style>{`
+        @keyframes float-down {
+          from { transform: translateY(-10vh); }
+          to { transform: translateY(110vh); }
+        }
+        .animate-float-down {
+          animation-name: float-down;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+      `}</style>
     </div>
   );
 }
