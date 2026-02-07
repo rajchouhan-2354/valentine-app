@@ -1,3 +1,8 @@
+import img1 from "../assets/1.jpg";
+import img2 from "../assets/2.jpg";
+import img3 from "../assets/3.jpg";
+import img4 from "../assets/4.jpg";
+
 export default function GalleryScreen({ onRestart }) {
   return (
     <div className="w-full text-center animate-fade-in px-2 overflow-y-auto">
@@ -10,59 +15,28 @@ export default function GalleryScreen({ onRestart }) {
 
       {/* 💌 POLAROID GALLERY */}
       <div className="flex flex-wrap justify-center gap-8 mb-12">
-        {/* Card 1 */}
-        <div className="bg-white p-3 pb-8 rounded-lg shadow-xl rotate-2 w-56">
-          <div className="aspect-square bg-white rounded-md mb-3 shadow-inner flex items-center justify-center p-2">
-            <img
-              src="../src/assets/1.jpg"
-              alt="Thinking of you"
-              className="max-w-full max-h-full object-contain rounded-sm"
-            />
+        {[
+          { img: img1, text: "Thinking of you", rot: "rotate-2" },
+          { img: img2, text: "A little gift", rot: "-rotate-2" },
+          { img: img3, text: "Sweet moments", rot: "rotate-1" },
+          { img: img4, text: "Just us", rot: "-rotate-1" },
+        ].map((item, index) => (
+          <div
+            key={index}
+            className={`bg-white p-3 pb-8 rounded-lg shadow-xl w-56 ${item.rot}`}
+          >
+            <div className="aspect-square bg-white rounded-md mb-3 shadow-inner flex items-center justify-center p-2">
+              <img
+                src={item.img}
+                alt={item.text}
+                className="max-w-full max-h-full object-contain rounded-sm"
+              />
+            </div>
+            <p className="text-rose-600 font-serif italic text-sm">
+              {item.text}
+            </p>
           </div>
-          <p className="text-rose-600 font-serif italic text-sm">
-            Thinking of you
-          </p>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-white p-3 pb-8 rounded-lg shadow-xl -rotate-2 w-56">
-          <div className="aspect-square bg-white rounded-md mb-3 shadow-inner flex items-center justify-center p-2">
-            <img
-              src="../src/assets/2.jpg"
-              alt="A little gift"
-              className="max-w-full max-h-full object-contain rounded-sm"
-            />
-          </div>
-          <p className="text-rose-600 font-serif italic text-sm">
-            A little gift
-          </p>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-white p-3 pb-8 rounded-lg shadow-xl rotate-1 w-56">
-          <div className="aspect-square bg-white rounded-md mb-3 shadow-inner flex items-center justify-center p-2">
-            <img
-              src="../src/assets/3.jpg"
-              alt="Sweet moments"
-              className="max-w-full max-h-full object-contain rounded-sm"
-            />
-          </div>
-          <p className="text-rose-600 font-serif italic text-sm">
-            Sweet moments
-          </p>
-        </div>
-
-        {/* Card 4 */}
-        <div className="bg-white p-3 pb-8 rounded-lg shadow-xl -rotate-1 w-56">
-          <div className="aspect-square bg-white rounded-md mb-3 shadow-inner flex items-center justify-center p-2">
-            <img
-              src="../src/assets/4.jpg"
-              alt="Just us"
-              className="max-w-full max-h-full object-contain rounded-sm"
-            />
-          </div>
-          <p className="text-rose-600 font-serif italic text-sm">Just us</p>
-        </div>
+        ))}
       </div>
 
       {/* 💝 FINAL MESSAGE */}
