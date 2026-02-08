@@ -8,13 +8,13 @@ import billionera from "../assets/audio/billionera.m4a";
 
 const songs = [
   {
-    title: "Khamosh Pal",
+    title: "Vaaroon",
     caption: "When silence speaks louder than words 🌙",
     audio: waalian,
     bg: "from-pink-200 to-rose-200",
   },
   {
-    title: "Tum Paas Ho",
+    title: "Raat Bhar",
     caption: "A feeling of being understood 🤍",
     audio: lagJaaGale,
     bg: "from-rose-200 to-pink-100",
